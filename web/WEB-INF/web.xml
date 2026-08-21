@@ -12,6 +12,14 @@
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>controller.LogoutServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CourseController</servlet-name>
+        <servlet-class>controller.CourseController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashboardController</servlet-name>
+        <servlet-class>controller.DashboardController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -23,5 +31,13 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CourseController</servlet-name>
+        <url-pattern>/admin/courses</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashboardController</servlet-name>
+        <url-pattern>/admin/dashboard</url-pattern>
     </servlet-mapping>
 </web-app>
