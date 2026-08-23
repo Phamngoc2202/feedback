@@ -51,9 +51,9 @@ public class LoginServlet extends HttpServlet {
         if (roleId == 1) {
             response.sendRedirect(contextPath + "/admin/home.jsp");
         } else if (roleId == 2) {
-            response.sendRedirect(contextPath + "/teacher/home.jsp");
+            response.sendRedirect(contextPath + "/teacher/home");
         } else if (roleId == 3) {
-            response.sendRedirect(contextPath + "/student/home.jsp");
+            response.sendRedirect(contextPath + "/student/home");
         }
     }
 }

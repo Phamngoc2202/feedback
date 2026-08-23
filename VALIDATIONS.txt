@@ -1,0 +1,178 @@
+CAC VALIDATION DA AP DUNG TRONG HE THONG FEEDBACK GIAO VIEN
+============================================================
+
+1. VALIDATION CHUNG
+-------------------
+- Tat ca input dang text duoc trim truoc khi validate va truoc khi luu DB.
+- Cac id lay tu request phai parse duoc sang so nguyen; neu khong hop le thi gan ve 0 va bi chan o buoc validate.
+- Cac thao tac them/sua/xoa neu that bai se hien thong bao loi thay vi loi trang trang.
+- Cac thong bao loi chinh da chuyen sang tieng Viet.
+
+
+2. ADMIN - QUAN LY TAI KHOAN
+----------------------------
+- Ten dang nhap bat buoc tu 4 den 50 ky tu.
+- Ten dang nhap khong duoc trung voi tai khoan khac.
+- Mat khau bat buoc tu 3 den 255 ky tu.
+- Ho va ten bat buoc tu 2 den 100 ky tu.
+- Email co the de trong, nhung neu nhap thi phai dung dinh dang email.
+- Email khong duoc vuot qua 100 ky tu.
+- Vai tro chi duoc nam trong 3 gia tri hop le:
+  1 = Admin
+  2 = Giang vien
+  3 = Sinh vien
+- Admin khong duoc xoa chinh tai khoan dang dang nhap.
+- Khong cho xoa tai khoan neu tai khoan dang co du lieu lien quan trong DB.
+
+
+3. ADMIN - QUAN LY MON HOC
+--------------------------
+- Ma mon hoc bat buoc tu 2 den 20 ky tu.
+- Ma mon hoc duoc trim va chuyen thanh chu in hoa truoc khi luu.
+- Ma mon hoc khong duoc trung.
+- Ten mon hoc bat buoc tu 2 den 100 ky tu.
+- So tin chi phai tu 1 den 10.
+- Khoa duoc chon phai ton tai trong bang departments.
+- Khong cho xoa mon hoc neu mon hoc dang duoc lien ket voi lop hoc phan.
+
+
+4. ADMIN - QUAN LY LOP HOC PHAN
+--------------------------------
+- Ma lop hoc phan bat buoc tu 2 den 50 ky tu.
+- Ma lop hoc phan duoc trim va chuyen thanh chu in hoa truoc khi luu.
+- Ma lop hoc phan khong duoc trung trong cung mot hoc ky.
+- Mon hoc duoc chon phai ton tai trong bang courses.
+- Hoc ky duoc chon phai ton tai trong bang semesters.
+- Giang vien duoc chon phai ton tai trong bang teachers.
+- Phong hoc co the de trong, nhung neu nhap thi toi da 20 ky tu.
+- Khong cho xoa lop hoc phan neu lop dang co ghi danh hoac feedback lien quan.
+
+
+5. ADMIN - QUAN LY GHI DANH
+---------------------------
+- Lop hoc phan duoc chon phai ton tai trong bang class_sections.
+- Sinh vien duoc chon phai ton tai trong bang students.
+- Khong cho ghi danh trung mot sinh vien vao cung mot lop hoc phan.
+- Khong cho xoa ghi danh neu sinh vien da gui feedback cho lop do.
+
+
+6. ADMIN - QUAN LY DOT KHAO SAT
+-------------------------------
+- Tieu de khao sat bat buoc tu 5 den 200 ky tu.
+- Hoc ky duoc chon phai ton tai trong bang semesters.
+- Ngay bat dau la bat buoc.
+- Ngay ket thuc la bat buoc.
+- Ngay ket thuc phai sau hoac bang ngay bat dau.
+- Dot khao sat moi tao mac dinh o trang thai dong.
+- Chi duoc mo dot khao sat khi dot do da co it nhat mot tieu chi danh gia.
+- Trong cung mot hoc ky chi duoc co mot dot khao sat dang mo.
+- Neu muon mo dot khao sat moi trong hoc ky do, phai dong dot dang mo truoc.
+
+
+7. STUDENT - GUI FEEDBACK
+-------------------------
+- Chi sinh vien da dang nhap voi role Sinh vien moi duoc vao trang feedback.
+- Sinh vien chi duoc feedback cac lop ma minh da duoc ghi danh.
+- Neu lop khong co dot khao sat dang mo thi khong duoc gui feedback.
+- Neu sinh vien da gui feedback cho lop va dot khao sat do thi khong duoc gui lai.
+- Dot khao sat phai co danh sach tieu chi danh gia.
+- Moi tieu chi bat buoc phai duoc chon diem.
+- Diem cua moi tieu chi phai nam trong khoang 1 den max_score cua tieu chi do.
+- max_score cua tieu chi phai lon hon hoac bang 1.
+- Gop y chung co the de trong.
+- Gop y chung toi da 1000 ky tu.
+- Khi luu feedback, DAO kiem tra lai:
+  sinh vien co thuoc lop khong,
+  dot khao sat co dang mo cho lop khong,
+  sinh vien da gui feedback truoc do chua.
+
+
+8. TEACHER - XEM VA TRA LOI FEEDBACK
+------------------------------------
+- Chi tai khoan co role Giang vien moi duoc vao trang teacher feedback.
+- Giang vien chi duoc xem feedback cua lop ma minh dang day.
+- classSectionId phai hop le.
+- Khi tra loi feedback, feedbackId phai hop le.
+- Noi dung tra loi khong duoc de trong.
+- Noi dung tra loi toi da 1000 ky tu.
+- DAO kiem tra feedback do co thuoc lop cua giang vien dang dang nhap hay khong.
+- Neu feedback khong thuoc giang vien do thi khong cho luu reply.
+
+
+9. LOGIN / PHAN QUYEN
+---------------------
+- Dang nhap sai username hoac password se bao loi.
+- Sau khi dang nhap, dieu huong theo role:
+  Admin -> /admin/home.jsp
+  Giang vien -> /teacher/home
+  Sinh vien -> /student/home
+- Cac module Student va Teacher deu kiem tra role truoc khi cho truy cap controller.
+
+
+10. CAC VALIDATION NEN BO SUNG NEU CON THOI GIAN
+------------------------------------------------
+- Validate password manh hon: toi thieu 6 ky tu, co chu va so.
+- Validate username chi gom chu, so, dau cham, gach duoi.
+- Validate ma sinh vien/ma giang vien neu co form tao rieng cho students/teachers.
+- Validate ngay cua dot khao sat nam trong khoang ngay cua hoc ky.
+- Validate khong cho feedback ngoai khoang start_date va end_date cua dot khao sat.
+- Validate moi dot khao sat nen co toi thieu 3 tieu chi truoc khi mo.
+- Validate max_score cua tieu chi nen nam trong khoang 1 den 10.
+- Validate comment/reply chong spam: khong chi gom khoang trang, khong lap ky tu qua nhieu.
+- Them CSRF token cho cac form POST/GET xoa neu can bao mat hon.
+
+
+11. DANH SACH TAI KHOAN MAU TRONG DATABASE
+------------------------------------------
+
+ADMIN
+- Username: admin01
+  Password: hash_admin_123
+  Ho ten: Nguyen Quan Tri
+
+GIANG VIEN
+- Username: gv_hung
+  Password: hash_pass_gv1
+  Ho ten: Nguyen Van Hung
+
+- Username: gv_lan
+  Password: hash_pass_gv2
+  Ho ten: Pham Thi Lan
+
+- Username: gv_minh
+  Password: hash_pass_gv3
+  Ho ten: Le Hoang Minh
+
+- Username: gv_dung
+  Password: hash_pass_gv4
+  Ho ten: Tran Tien Dung
+
+SINH VIEN
+- Username: sv_nam
+  Password: hash_pass_sv1
+  Ho ten: Tran Van Nam
+
+- Username: sv_hoa
+  Password: hash_pass_sv2
+  Ho ten: Le Thi Hoa
+
+- Username: sv_danh
+  Password: hash_pass_sv3
+  Ho ten: Do Thanh Danh
+
+- Username: sv_linh
+  Password: hash_pass_sv4
+  Ho ten: Vu Phuong Linh
+
+- Username: sv_tuan
+  Password: hash_pass_sv5
+  Ho ten: Hoang Anh Tuan
+
+- Username: sv_mai
+  Password: hash_pass_sv6
+  Ho ten: Ngo Ngoc Mai
+
+GHI CHU
+- Cot password_hash trong DB hien dang luu mat khau dang plain text gia lap, chua bam hash that.
+- Khi dang nhap, nhap dung gia tri password_hash o tren vao o mat khau.
+- Vi du: username admin01, password hash_admin_123.

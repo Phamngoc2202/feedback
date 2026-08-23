@@ -77,4 +77,30 @@ public class CourseDAO extends DBContext {
             return false;
         }
     }
+
+    public boolean courseCodeExists(String courseCode) {
+        String query = "SELECT 1 FROM courses WHERE course_code = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, courseCode);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            System.out.println("Loi courseCodeExists: " + e.getMessage());
+        }
+        return true;
+    }
+
+    public boolean departmentExists(int departmentId) {
+        String query = "SELECT 1 FROM departments WHERE department_id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, departmentId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            System.out.println("Loi departmentExists: " + e.getMessage());
+        }
+        return false;
+    }
 }
