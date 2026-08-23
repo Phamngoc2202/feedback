@@ -111,4 +111,18 @@ public class UserDAO extends DBContext {
             return false;
         }
     }
+
+    public boolean usernameExists(String username, int excludeUserId) {
+        String query = "SELECT 1 FROM users WHERE username = ? AND user_id <> ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, username);
+            ps.setInt(2, excludeUserId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            System.out.println("Loi usernameExists: " + e.getMessage());
+        }
+        return true;
+    }
 }
