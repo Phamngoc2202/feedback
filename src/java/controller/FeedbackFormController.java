@@ -23,6 +23,7 @@ public class FeedbackFormController extends HttpServlet {
             throws ServletException, IOException {
         FeedbackFormDAO dao = new FeedbackFormDAO();
         String action = request.getParameter("action");
+        String q = ValidationUtils.trim(request.getParameter("q"));
 
         if ("targets".equals(action)) {
             int id = parseInt(request.getParameter("id"), 0);
@@ -62,13 +63,13 @@ public class FeedbackFormController extends HttpServlet {
             }
             if (currentStatus == 0 && dao.hasOtherActiveFormInSemester(form.getSemesterId(), id)) {
                 request.setAttribute("error", "Học kỳ này đã có một khảo sát đang mở.");
-                loadList(request, dao);
+                loadList(request, dao, q);
                 request.getRequestDispatcher("/admin/feedback_form_manager.jsp").forward(request, response);
                 return;
             }
             if (currentStatus == 0 && !dao.hasCriteria(id)) {
                 request.setAttribute("error", "Không thể mở khảo sát vì chưa có tiêu chí đánh giá.");
-                loadList(request, dao);
+                loadList(request, dao, q);
                 request.getRequestDispatcher("/admin/feedback_form_manager.jsp").forward(request, response);
                 return;
             }
@@ -79,7 +80,7 @@ public class FeedbackFormController extends HttpServlet {
             return;
         }
 
-        loadList(request, dao);
+        loadList(request, dao, q);
         request.getRequestDispatcher("/admin/feedback_form_manager.jsp").forward(request, response);
     }
 
@@ -97,7 +98,7 @@ public class FeedbackFormController extends HttpServlet {
         String error = validateForm(dao, title, semesterId, startDate, endDate);
         if (error != null) {
             request.setAttribute("error", error);
-            loadList(request, dao);
+            loadList(request, dao, "");
             request.getRequestDispatcher("/admin/feedback_form_manager.jsp").forward(request, response);
             return;
         }
@@ -105,7 +106,7 @@ public class FeedbackFormController extends HttpServlet {
         FeedbackForm newForm = new FeedbackForm(0, title, semesterId, "", startDate, endDate, false);
         if (!dao.insertForm(newForm)) {
             request.setAttribute("error", "Không thể tạo đợt khảo sát.");
-            loadList(request, dao);
+            loadList(request, dao, "");
             request.getRequestDispatcher("/admin/feedback_form_manager.jsp").forward(request, response);
             return;
         }
@@ -130,11 +131,12 @@ public class FeedbackFormController extends HttpServlet {
         return null;
     }
 
-    private void loadList(HttpServletRequest request, FeedbackFormDAO dao) {
-        List<FeedbackForm> fList = dao.getAllForms();
+    private void loadList(HttpServletRequest request, FeedbackFormDAO dao, String q) {
+        List<FeedbackForm> fList = ValidationUtils.isBlank(q) ? dao.getAllForms() : dao.searchForms(q);
         List<Semester> sList = dao.getAllSemesters();
         request.setAttribute("formList", fList);
         request.setAttribute("semesterList", sList);
+        request.setAttribute("q", q);
     }
 
     private Date parseDate(String value) {

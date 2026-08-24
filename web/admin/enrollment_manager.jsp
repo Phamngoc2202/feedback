@@ -42,6 +42,14 @@
                 <div class="card-header">
                     <h2>Danh sách lớp học phần</h2>
                 </div>
+                <form action="${pageContext.request.contextPath}/admin/enrollments" method="GET" class="filter-bar">
+                    <div class="form-row">
+                        <label>Tìm kiếm lớp</label>
+                        <input type="text" name="q" value="${q}" placeholder="Mã lớp, môn học, giảng viên, học kỳ">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/enrollments">Xóa lọc</a>
+                </form>
                 <div class="table-wrap">
                     <table class="table">
                         <thead>
@@ -113,6 +121,16 @@
                         <div class="card-header">
                             <h2>Danh sách sinh viên</h2>
                         </div>
+                        <form action="${pageContext.request.contextPath}/admin/enrollments" method="GET" class="filter-bar">
+                            <input type="hidden" name="classSectionId" value="${selectedClassSection.classSectionId}">
+                            <input type="hidden" name="q" value="${q}">
+                            <div class="form-row">
+                                <label>Tìm kiếm sinh viên trong lớp</label>
+                                <input type="text" name="studentQ" value="${studentQ}" placeholder="Mã sinh viên, họ tên, email">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                            <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/enrollments?classSectionId=${selectedClassSection.classSectionId}">Xóa lọc</a>
+                        </form>
                         <c:choose>
                             <c:when test="${empty enrollmentList}">
                                 <div class="empty-state">Lớp này chưa có sinh viên.</div>

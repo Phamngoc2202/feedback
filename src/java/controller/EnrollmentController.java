@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.ClassSection;
+import util.ValidationUtils;
 
 @WebServlet(name = "EnrollmentController", urlPatterns = {"/admin/enrollments"})
 public class EnrollmentController extends HttpServlet {
@@ -19,6 +20,8 @@ public class EnrollmentController extends HttpServlet {
         AdminAcademicDAO dao = new AdminAcademicDAO();
         String action = request.getParameter("action");
         int classSectionId = parseInt(request.getParameter("classSectionId"), 0);
+        String q = ValidationUtils.trim(request.getParameter("q"));
+        String studentQ = ValidationUtils.trim(request.getParameter("studentQ"));
 
         if ("delete".equals(action)) {
             int id = parseInt(request.getParameter("id"), 0);
@@ -31,7 +34,7 @@ public class EnrollmentController extends HttpServlet {
             }
         }
 
-        loadData(request, dao, classSectionId);
+        loadData(request, dao, classSectionId, q, studentQ);
         request.getRequestDispatcher("/admin/enrollment_manager.jsp").forward(request, response);
     }
 
@@ -45,7 +48,7 @@ public class EnrollmentController extends HttpServlet {
         String error = validateEnrollment(dao, classSectionId, studentId);
         if (error != null || !dao.insertEnrollment(classSectionId, studentId)) {
             request.setAttribute("error", error != null ? error : "Không thể thêm ghi danh. Sinh viên có thể đã thuộc lớp này.");
-            loadData(request, dao, classSectionId);
+            loadData(request, dao, classSectionId, "", "");
             request.getRequestDispatcher("/admin/enrollment_manager.jsp").forward(request, response);
             return;
         }
@@ -63,15 +66,21 @@ public class EnrollmentController extends HttpServlet {
         return null;
     }
 
-    private void loadData(HttpServletRequest request, AdminAcademicDAO dao, int classSectionId) {
-        List<ClassSection> classSectionList = dao.getAllClassSections();
+    private void loadData(HttpServletRequest request, AdminAcademicDAO dao,
+            int classSectionId, String q, String studentQ) {
+        List<ClassSection> classSectionList =
+                ValidationUtils.isBlank(q) ? dao.getAllClassSections() : dao.searchClassSections(q);
         request.setAttribute("classSectionList", classSectionList);
         request.setAttribute("studentList", dao.getStudentOptions());
+        request.setAttribute("q", q);
+        request.setAttribute("studentQ", studentQ);
 
         if (classSectionId > 0) {
             request.setAttribute("selectedClassSection", dao.getClassSectionById(classSectionId));
             request.setAttribute("selectedClassSectionId", classSectionId);
-            request.setAttribute("enrollmentList", dao.getEnrollmentsByClassSectionId(classSectionId));
+            request.setAttribute("enrollmentList", ValidationUtils.isBlank(studentQ)
+                    ? dao.getEnrollmentsByClassSectionId(classSectionId)
+                    : dao.searchEnrollmentsByClassSectionId(classSectionId, studentQ));
         }
     }
 

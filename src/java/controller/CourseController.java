@@ -20,6 +20,7 @@ public class CourseController extends HttpServlet {
             throws ServletException, IOException {
         CourseDAO dao = new CourseDAO();
         String action = request.getParameter("action");
+        String q = ValidationUtils.trim(request.getParameter("q"));
 
         if ("delete".equals(action)) {
             int id = parseInt(request.getParameter("id"), 0);
@@ -28,7 +29,7 @@ public class CourseController extends HttpServlet {
             }
         }
 
-        loadData(request, dao);
+        loadData(request, dao, q);
         request.getRequestDispatcher("/admin/course_manager.jsp").forward(request, response);
     }
 
@@ -46,7 +47,7 @@ public class CourseController extends HttpServlet {
         String error = validateCourse(dao, code, name, credits, deptId);
         if (error != null) {
             request.setAttribute("error", error);
-            loadData(request, dao);
+            loadData(request, dao, "");
             request.getRequestDispatcher("/admin/course_manager.jsp").forward(request, response);
             return;
         }
@@ -54,7 +55,7 @@ public class CourseController extends HttpServlet {
         Course newCourse = new Course(0, code, name, credits, deptId, "");
         if (!dao.insertCourse(newCourse)) {
             request.setAttribute("error", "Không thể thêm môn học. Vui lòng thử lại.");
-            loadData(request, dao);
+            loadData(request, dao, "");
             request.getRequestDispatcher("/admin/course_manager.jsp").forward(request, response);
             return;
         }
@@ -81,11 +82,12 @@ public class CourseController extends HttpServlet {
         return null;
     }
 
-    private void loadData(HttpServletRequest request, CourseDAO dao) {
-        List<Course> cList = dao.getAllCourses();
+    private void loadData(HttpServletRequest request, CourseDAO dao, String q) {
+        List<Course> cList = ValidationUtils.isBlank(q) ? dao.getAllCourses() : dao.searchCourses(q);
         List<Department> dList = dao.getAllDepartments();
         request.setAttribute("courseList", cList);
         request.setAttribute("deptList", dList);
+        request.setAttribute("q", q);
     }
 
     private int parseInt(String value, int defaultValue) {

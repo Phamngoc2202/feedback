@@ -26,7 +26,25 @@ public class TeacherHomeController extends HttpServlet {
 
         TeacherFeedbackDAO dao = new TeacherFeedbackDAO();
         List<TeacherClassOverview> classList = dao.getClassesByTeacherId(account.getUserId());
+        int totalStudents = 0;
+        int totalFeedbacks = 0;
+        double totalAverage = 0;
+        int scoredClasses = 0;
+
+        for (TeacherClassOverview classItem : classList) {
+            totalStudents += classItem.getStudentCount();
+            totalFeedbacks += classItem.getFeedbackCount();
+            if (classItem.getAverageScore() > 0) {
+                totalAverage += classItem.getAverageScore();
+                scoredClasses++;
+            }
+        }
+
         request.setAttribute("classList", classList);
+        request.setAttribute("totalClasses", classList.size());
+        request.setAttribute("totalStudents", totalStudents);
+        request.setAttribute("totalFeedbacks", totalFeedbacks);
+        request.setAttribute("overallAverage", scoredClasses == 0 ? 0 : totalAverage / scoredClasses);
         request.getRequestDispatcher("/teacher/home.jsp").forward(request, response);
     }
 

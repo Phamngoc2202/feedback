@@ -18,6 +18,7 @@ public class ClassSectionController extends HttpServlet {
             throws ServletException, IOException {
         AdminAcademicDAO dao = new AdminAcademicDAO();
         String action = request.getParameter("action");
+        String q = ValidationUtils.trim(request.getParameter("q"));
 
         if ("delete".equals(action)) {
             int id = parseInt(request.getParameter("id"), 0);
@@ -26,7 +27,7 @@ public class ClassSectionController extends HttpServlet {
             }
         }
 
-        loadData(request, dao);
+        loadData(request, dao, q);
         request.getRequestDispatcher("/admin/class_section_manager.jsp").forward(request, response);
     }
 
@@ -45,7 +46,7 @@ public class ClassSectionController extends HttpServlet {
         String error = validateClassSection(dao, classCode, courseId, semesterId, teacherId, room);
         if (error != null) {
             request.setAttribute("error", error);
-            loadData(request, dao);
+            loadData(request, dao, "");
             request.getRequestDispatcher("/admin/class_section_manager.jsp").forward(request, response);
             return;
         }
@@ -59,7 +60,7 @@ public class ClassSectionController extends HttpServlet {
 
         if (!dao.insertClassSection(classSection)) {
             request.setAttribute("error", "Không thể tạo lớp học phần. Vui lòng thử lại.");
-            loadData(request, dao);
+            loadData(request, dao, "");
             request.getRequestDispatcher("/admin/class_section_manager.jsp").forward(request, response);
             return;
         }
@@ -90,11 +91,13 @@ public class ClassSectionController extends HttpServlet {
         return null;
     }
 
-    private void loadData(HttpServletRequest request, AdminAcademicDAO dao) {
-        request.setAttribute("classSectionList", dao.getAllClassSections());
+    private void loadData(HttpServletRequest request, AdminAcademicDAO dao, String q) {
+        request.setAttribute("classSectionList",
+                ValidationUtils.isBlank(q) ? dao.getAllClassSections() : dao.searchClassSections(q));
         request.setAttribute("courseList", dao.getCourseOptions());
         request.setAttribute("semesterList", dao.getSemesterOptions());
         request.setAttribute("teacherList", dao.getTeacherOptions());
+        request.setAttribute("q", q);
     }
 
     private int parseInt(String value, int defaultValue) {

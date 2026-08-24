@@ -71,6 +71,14 @@
                 <div class="card-header">
                     <h2>Danh sách đợt khảo sát</h2>
                 </div>
+                <form action="${pageContext.request.contextPath}/admin/feedback-forms" method="GET" class="filter-bar">
+                    <div class="form-row">
+                        <label>Tìm kiếm khảo sát</label>
+                        <input type="text" name="q" value="${q}" placeholder="Tiêu đề, học kỳ, năm học">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/feedback-forms">Xóa lọc</a>
+                </form>
                 <div class="table-wrap">
                     <table class="table">
                         <thead>

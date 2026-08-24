@@ -68,6 +68,38 @@ CAC VALIDATION DA AP DUNG TRONG HE THONG FEEDBACK GIAO VIEN
 - Trong cung mot hoc ky chi duoc co mot dot khao sat dang mo.
 - Neu muon mo dot khao sat moi trong hoc ky do, phai dong dot dang mo truoc.
 
+GIAI THICH THEM VE "DOT KHAO SAT"
+- Dot khao sat la mot khoang thoi gian admin mo ra de sinh vien danh gia giang vien.
+- Dot khao sat khong gan truc tiep voi tung sinh vien rieng le.
+- Dot khao sat gan voi mot hoc ky.
+- Khi dot khao sat cua hoc ky do dang mo, tat ca sinh vien dang hoc cac lop hoc phan thuoc hoc ky do se thay nut feedback.
+- Vi du:
+  Dot khao sat "Khao sat y kien Sinh vien HK1 2026-2027" gan voi hoc ky 3.
+  Trong hoc ky 3 co cac lop INT1234_01, INT1234_02, INT5678_01, TEL1001_01, BUS2001_01.
+  Sinh vien nao co trong bang enrollments cua cac lop tren thi sinh vien do la doi tuong duoc feedback.
+- Nói ngắn gọn:
+  feedback_forms.semester_id -> tim cac class_sections trong hoc ky do.
+  class_sections.class_section_id -> tim sinh vien trong enrollments.
+  enrollments.student_id -> danh sach sinh vien phai thuc hien khao sat.
+- Nut "Doi tuong" trong trang Quan ly dot khao sat dung de xem:
+  lop nao thuoc dot khao sat,
+  lop do co bao nhieu sinh vien,
+  bao nhieu sinh vien da gui feedback,
+  sinh vien nao da gui va sinh vien nao chua gui.
+
+QUY TRINH ADMIN NEN LAM
+1. Tao hoc ky.
+2. Tao mon hoc.
+3. Tao lop hoc phan va gan giang vien day lop do.
+4. Ghi danh sinh vien vao lop hoc phan.
+5. Tao dot khao sat cho hoc ky tuong ung.
+6. Dam bao dot khao sat co tieu chi danh gia.
+7. Mo dot khao sat.
+8. Sinh vien dang nhap se thay cac lop minh dang hoc co khao sat dang mo.
+9. Sinh vien gui feedback.
+10. Admin bam "Doi tuong" de xem tien do sinh vien da/chua feedback.
+11. Giang vien dang nhap de xem ket qua feedback cua lop minh day.
+
 
 7. STUDENT - GUI FEEDBACK
 -------------------------
