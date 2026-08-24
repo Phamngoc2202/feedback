@@ -30,6 +30,27 @@
             </div>
 
             <div class="card">
+                <div class="stats-grid">
+                    <div class="stat">
+                        <span>Số lớp phụ trách</span>
+                        <strong>${totalClasses}</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Tổng sinh viên</span>
+                        <strong>${totalStudents}</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Tổng feedback</span>
+                        <strong>${totalFeedbacks}</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Điểm TB chung</span>
+                        <strong>${overallAverage}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
                 <div class="card-header">
                     <h2>Danh sách lớp học phần</h2>
                 </div>
@@ -64,7 +85,7 @@
                                             <td><span class="badge">${cls.averageScore}</span></td>
                                             <td>
                                                 <a class="btn btn-primary" href="${pageContext.request.contextPath}/teacher/feedback?classSectionId=${cls.classSectionId}">
-                                                    Xem feedback
+                                                    Chi tiết lớp
                                                 </a>
                                             </td>
                                         </tr>

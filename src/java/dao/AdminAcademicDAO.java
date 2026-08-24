@@ -46,6 +46,45 @@ public class AdminAcademicDAO extends DBContext {
         return list;
     }
 
+    public List<ClassSection> searchClassSections(String keyword) {
+        List<ClassSection> list = new ArrayList<>();
+        String query = "SELECT cs.class_section_id, cs.class_code, cs.course_id, c.course_code, c.course_name, "
+                + "cs.semester_id, s.semester_name, s.academic_year, cs.teacher_id, "
+                + "t.teacher_code, u.full_name AS teacher_name, cs.room, "
+                + "COUNT(e.enrollment_id) AS enrollment_count "
+                + "FROM class_sections cs "
+                + "JOIN courses c ON cs.course_id = c.course_id "
+                + "JOIN semesters s ON cs.semester_id = s.semester_id "
+                + "JOIN teachers t ON cs.teacher_id = t.teacher_id "
+                + "JOIN users u ON t.teacher_id = u.user_id "
+                + "LEFT JOIN enrollments e ON cs.class_section_id = e.class_section_id "
+                + "WHERE cs.class_code LIKE ? OR c.course_code LIKE ? OR c.course_name LIKE ? "
+                + "OR u.full_name LIKE ? OR t.teacher_code LIKE ? OR s.semester_name LIKE ? OR s.academic_year LIKE ? "
+                + "GROUP BY cs.class_section_id, cs.class_code, cs.course_id, c.course_code, c.course_name, "
+                + "cs.semester_id, s.semester_name, s.academic_year, cs.teacher_id, "
+                + "t.teacher_code, u.full_name, cs.room "
+                + "ORDER BY s.academic_year DESC, s.semester_name DESC, cs.class_code";
+        String pattern = "%" + keyword + "%";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            for (int i = 1; i <= 7; i++) {
+                ps.setString(i, pattern);
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new ClassSection(rs.getInt("class_section_id"),
+                        rs.getString("class_code"), rs.getInt("course_id"),
+                        rs.getString("course_code"), rs.getString("course_name"),
+                        rs.getInt("semester_id"), rs.getString("semester_name"),
+                        rs.getString("academic_year"), rs.getInt("teacher_id"),
+                        rs.getString("teacher_code"), rs.getString("teacher_name"),
+                        rs.getString("room"), rs.getInt("enrollment_count")));
+            }
+        } catch (Exception e) {
+            System.out.println("Loi searchClassSections: " + e.getMessage());
+        }
+        return list;
+    }
+
     public boolean insertClassSection(ClassSection classSection) {
         String query = "INSERT INTO class_sections (class_code, course_id, semester_id, teacher_id, room) "
                 + "VALUES (?, ?, ?, ?, ?)";
@@ -166,6 +205,44 @@ public class AdminAcademicDAO extends DBContext {
             }
         } catch (Exception e) {
             System.out.println("Loi getEnrollmentsByClassSectionId: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public List<Enrollment> searchEnrollmentsByClassSectionId(int classSectionId, String keyword) {
+        List<Enrollment> list = new ArrayList<>();
+        String query = "SELECT e.enrollment_id, e.class_section_id, cs.class_code, "
+                + "c.course_code, c.course_name, e.student_id, st.student_code, "
+                + "su.full_name AS student_name, tu.full_name AS teacher_name, "
+                + "sem.semester_name, sem.academic_year "
+                + "FROM enrollments e "
+                + "JOIN students st ON e.student_id = st.student_id "
+                + "JOIN users su ON st.student_id = su.user_id "
+                + "JOIN class_sections cs ON e.class_section_id = cs.class_section_id "
+                + "JOIN courses c ON cs.course_id = c.course_id "
+                + "JOIN semesters sem ON cs.semester_id = sem.semester_id "
+                + "JOIN teachers t ON cs.teacher_id = t.teacher_id "
+                + "JOIN users tu ON t.teacher_id = tu.user_id "
+                + "WHERE e.class_section_id = ? "
+                + "AND (st.student_code LIKE ? OR su.full_name LIKE ? OR su.email LIKE ?) "
+                + "ORDER BY su.full_name";
+        String pattern = "%" + keyword + "%";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, classSectionId);
+            ps.setString(2, pattern);
+            ps.setString(3, pattern);
+            ps.setString(4, pattern);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Enrollment(rs.getInt("enrollment_id"),
+                        rs.getInt("class_section_id"), rs.getString("class_code"),
+                        rs.getString("course_code"), rs.getString("course_name"),
+                        rs.getInt("student_id"), rs.getString("student_code"),
+                        rs.getString("student_name"), rs.getString("teacher_name"),
+                        rs.getString("semester_name"), rs.getString("academic_year")));
+            }
+        } catch (Exception e) {
+            System.out.println("Loi searchEnrollmentsByClassSectionId: " + e.getMessage());
         }
         return list;
     }

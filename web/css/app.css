@@ -527,6 +527,19 @@ textarea:focus {
     margin-bottom: 10px;
 }
 
+.filter-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 14px 0 18px;
+}
+
+.filter-bar .form-row {
+    min-width: 260px;
+    margin: 0;
+}
+
 @media (max-width: 900px) {
     .auth-page,
     .layout {

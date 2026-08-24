@@ -54,10 +54,85 @@
                         <strong>${classSection.feedbackCount}</strong>
                     </div>
                     <div class="stat">
+                        <span>Chưa feedback</span>
+                        <strong>${pendingCount}</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Tỷ lệ hoàn thành</span>
+                        <strong>${completionRate}%</strong>
+                    </div>
+                    <div class="stat">
                         <span>Điểm TB</span>
                         <strong>${classSection.averageScore}</strong>
                     </div>
                 </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Tiến độ feedback của sinh viên</h2>
+                </div>
+                <c:choose>
+                    <c:when test="${empty studentStatuses}">
+                        <div class="empty-state">Lớp này chưa có sinh viên nào được ghi danh.</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="table-wrap">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Sinh viên</th>
+                                        <th>Email</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thời gian gửi</th>
+                                        <th>Điểm TB</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${studentStatuses}" var="student">
+                                        <tr>
+                                            <td>
+                                                <strong>${student.studentName}</strong><br>
+                                                <span class="muted">${student.studentCode}</span>
+                                            </td>
+                                            <td>${student.email}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${student.submitted}">
+                                                        <span class="badge badge-success">Đã feedback</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge badge-danger">Chưa feedback</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${student.submitted}">
+                                                        ${student.submittedAt}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="muted">-</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${student.submitted}">
+                                                        <span class="badge">${student.averageScore}</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="muted">-</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <div class="card">
@@ -99,6 +174,19 @@
                 <div class="card-header">
                     <h2>Ý kiến sinh viên</h2>
                 </div>
+                <form action="${pageContext.request.contextPath}/teacher/feedback" method="GET" class="filter-bar">
+                    <input type="hidden" name="classSectionId" value="${classSection.classSectionId}">
+                    <div class="form-row">
+                        <label>Lọc phản hồi</label>
+                        <select name="replyStatus">
+                            <option value="all" ${replyStatus == 'all' ? 'selected' : ''}>Tất cả</option>
+                            <option value="replied" ${replyStatus == 'replied' ? 'selected' : ''}>Đã trả lời</option>
+                            <option value="unreplied" ${replyStatus == 'unreplied' ? 'selected' : ''}>Chưa trả lời</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lọc</button>
+                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/teacher/feedback?classSectionId=${classSection.classSectionId}">Xóa lọc</a>
+                </form>
                 <c:choose>
                     <c:when test="${empty feedbackComments}">
                         <div class="empty-state">Chưa có sinh viên gửi feedback cho lớp này.</div>
@@ -111,6 +199,7 @@
                                         <th>Sinh viên</th>
                                         <th>Ý kiến</th>
                                         <th>Điểm TB</th>
+                                        <th>Chi tiết điểm</th>
                                         <th>Trả lời</th>
                                     </tr>
                                 </thead>
@@ -124,6 +213,14 @@
                                             </td>
                                             <td>${comment.generalComment}</td>
                                             <td><span class="badge">${comment.averageScore}</span></td>
+                                            <td>
+                                                <c:forEach items="${feedbackDetailMap[comment.feedbackId]}" var="detail">
+                                                    <div class="reply-box">
+                                                        <strong>${detail.criterionTitle}</strong><br>
+                                                        ${detail.score}/${detail.maxScore}
+                                                    </div>
+                                                </c:forEach>
+                                            </td>
                                             <td>
                                                 <c:if test="${not empty comment.replyContent}">
                                                     <div class="reply-box">

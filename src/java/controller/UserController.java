@@ -20,6 +20,7 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         UserDAO dao = new UserDAO();
         String action = request.getParameter("action");
+        String q = ValidationUtils.trim(request.getParameter("q"));
 
         if ("delete".equals(action)) {
             int id = parseInt(request.getParameter("id"), 0);
@@ -37,8 +38,9 @@ public class UserController extends HttpServlet {
             return;
         }
 
-        List<User> list = dao.getAllUsers();
+        List<User> list = ValidationUtils.isBlank(q) ? dao.getAllUsers() : dao.searchUsers(q);
         request.setAttribute("userList", list);
+        request.setAttribute("q", q);
         request.getRequestDispatcher("/admin/user_manager.jsp").forward(request, response);
     }
 

@@ -77,6 +77,14 @@
                 <div class="card-header">
                     <h2>Danh sách tài khoản</h2>
                 </div>
+                <form action="${pageContext.request.contextPath}/admin/users" method="GET" class="filter-bar">
+                    <div class="form-row">
+                        <label>Tìm kiếm tài khoản</label>
+                        <input type="text" name="q" value="${q}" placeholder="Tên đăng nhập, họ tên, email">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/users">Xóa lọc</a>
+                </form>
                 <div class="table-wrap">
                     <table class="table">
                         <thead>

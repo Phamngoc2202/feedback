@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import model.FeedbackDetailItem;
 import model.TeacherClassOverview;
 import model.TeacherCriterionStat;
 import model.TeacherFeedbackComment;
+import model.TeacherStudentFeedbackStatus;
 import util.ValidationUtils;
 
 public class TeacherFeedbackDAO extends DBContext {
@@ -132,6 +134,66 @@ public class TeacherFeedbackDAO extends DBContext {
             }
         } catch (Exception e) {
             System.out.println("Loi getFeedbackComments: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public List<TeacherStudentFeedbackStatus> getStudentFeedbackStatuses(int teacherId, int classSectionId) {
+        List<TeacherStudentFeedbackStatus> list = new ArrayList<>();
+        String query = "SELECT st.student_id, st.student_code, su.full_name AS student_name, su.email, "
+                + "CASE WHEN fb.feedback_id IS NULL THEN 0 ELSE 1 END AS submitted, "
+                + "fb.created_at AS submitted_at, "
+                + "ISNULL(AVG(CAST(fd.score AS FLOAT)), 0) AS average_score "
+                + "FROM enrollments e "
+                + "JOIN class_sections cs ON e.class_section_id = cs.class_section_id "
+                + "JOIN students st ON e.student_id = st.student_id "
+                + "JOIN users su ON st.student_id = su.user_id "
+                + "OUTER APPLY ( "
+                + "    SELECT TOP 1 feedback_id, created_at "
+                + "    FROM feedbacks "
+                + "    WHERE class_section_id = e.class_section_id AND student_id = e.student_id "
+                + "    ORDER BY created_at DESC "
+                + ") fb "
+                + "LEFT JOIN feedback_details fd ON fb.feedback_id = fd.feedback_id "
+                + "WHERE cs.teacher_id = ? AND cs.class_section_id = ? "
+                + "GROUP BY st.student_id, st.student_code, su.full_name, su.email, "
+                + "fb.feedback_id, fb.created_at "
+                + "ORDER BY submitted ASC, su.full_name";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, teacherId);
+            ps.setInt(2, classSectionId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new TeacherStudentFeedbackStatus(rs.getInt("student_id"),
+                        rs.getString("student_code"), rs.getString("student_name"),
+                        rs.getString("email"), rs.getBoolean("submitted"),
+                        rs.getTimestamp("submitted_at"), rs.getDouble("average_score")));
+            }
+        } catch (Exception e) {
+            System.out.println("Loi getStudentFeedbackStatuses: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public List<FeedbackDetailItem> getFeedbackDetailsForTeacher(int teacherId, int feedbackId) {
+        List<FeedbackDetailItem> list = new ArrayList<>();
+        String query = "SELECT c.title, fd.score, c.max_score "
+                + "FROM feedback_details fd "
+                + "JOIN criteria c ON fd.criterion_id = c.criterion_id "
+                + "JOIN feedbacks f ON fd.feedback_id = f.feedback_id "
+                + "JOIN class_sections cs ON f.class_section_id = cs.class_section_id "
+                + "WHERE fd.feedback_id = ? AND cs.teacher_id = ? "
+                + "ORDER BY c.criterion_id";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, feedbackId);
+            ps.setInt(2, teacherId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new FeedbackDetailItem(rs.getString("title"),
+                        rs.getInt("score"), rs.getInt("max_score")));
+            }
+        } catch (Exception e) {
+            System.out.println("Loi getFeedbackDetailsForTeacher: " + e.getMessage());
         }
         return list;
     }

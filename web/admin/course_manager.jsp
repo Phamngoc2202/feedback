@@ -71,6 +71,14 @@
                 <div class="card-header">
                     <h2>Danh sách môn học</h2>
                 </div>
+                <form action="${pageContext.request.contextPath}/admin/courses" method="GET" class="filter-bar">
+                    <div class="form-row">
+                        <label>Tìm kiếm môn học</label>
+                        <input type="text" name="q" value="${q}" placeholder="Mã môn, tên môn, khoa">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <a class="btn btn-secondary" href="${pageContext.request.contextPath}/admin/courses">Xóa lọc</a>
+                </form>
                 <div class="table-wrap">
                     <table class="table">
                         <thead>

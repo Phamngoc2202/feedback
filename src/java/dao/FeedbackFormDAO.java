@@ -54,6 +54,33 @@ public class FeedbackFormDAO extends DBContext {
         return list;
     }
 
+    public List<FeedbackForm> searchForms(String keyword) {
+        List<FeedbackForm> list = new ArrayList<>();
+        String query = "SELECT f.*, s.semester_name, s.academic_year "
+                + "FROM feedback_forms f "
+                + "JOIN semesters s ON f.semester_id = s.semester_id "
+                + "WHERE f.title LIKE ? OR s.semester_name LIKE ? OR s.academic_year LIKE ? "
+                + "ORDER BY f.form_id DESC";
+        String pattern = "%" + keyword + "%";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, pattern);
+            ps.setString(2, pattern);
+            ps.setString(3, pattern);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String fullSemesterName = rs.getString("semester_name") + " (" + rs.getString("academic_year") + ")";
+                list.add(new FeedbackForm(rs.getInt("form_id"), rs.getString("title"),
+                        rs.getInt("semester_id"), fullSemesterName,
+                        rs.getDate("start_date"), rs.getDate("end_date"),
+                        rs.getBoolean("is_active")));
+            }
+        } catch (Exception e) {
+            System.out.println("Loi searchForms: " + e.getMessage());
+        }
+        return list;
+    }
+
     public FeedbackForm getFormById(int formId) {
         String query = "SELECT f.*, s.semester_name, s.academic_year "
                 + "FROM feedback_forms f "
